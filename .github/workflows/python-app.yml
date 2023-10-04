@@ -1,0 +1,37 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches:
+      - main # Змініть на основну гілку вашого репозиторію
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt # Змініть на ваш файл залежностей
+
+    - name: Run tests
+      run: |
+        pytest # Змініть на вашу команду для запуску тестів
+      continue-on-error: true # Продовжувати виконання пайплайну при помилках
+
+    - name: Deploy
+      run: |
+        if [ ${{ success() }} == 'true' ]; then
+          echo "Deployed"
+        else
+          echo "Tests failed. Deployment skipped."
+          exit 1
+        fi
